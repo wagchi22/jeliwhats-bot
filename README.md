@@ -1,7 +1,7 @@
 # Notificações do Jellyfin pelo WhatsApp
 
-Serviço Node.js que recebe notificações HTTP do Jellyfin e as encaminha, via
-WhatsApp Web, para os números configurados. O envio usa
+Pacote npm que inicia um serviço Node.js para receber notificações HTTP do
+Jellyfin e encaminhá-las, via WhatsApp Web, aos números configurados. O envio usa
 [whatsapp-web.js](https://github.com/wwebjs/whatsapp-web.js), uma biblioteca
 não oficial; mantenha-a atualizada e considere os termos de uso do WhatsApp.
 Para contornar a falha de conexão com versões recentes do WhatsApp Web, o
@@ -12,9 +12,9 @@ remotas declaradas neste `package.json`.
 
 ## Versionamento
 
-O projeto usa versionamento semântico (`MAJOR.MINOR.PATCH`). A versão atual é
-`1.0.0`, registrada no `package.json` e no `package-lock.json`, e sua tag Git é
-`v1.0.0`.
+O pacote npm se chama `jeliwhats-bot` e usa versionamento semântico
+(`MAJOR.MINOR.PATCH`). A versão atual é `1.0.0`, registrada no `package.json`
+e no `package-lock.json`, e sua tag Git é `v1.0.0`.
 
 Para criar a próxima versão, com a árvore de trabalho limpa, execute um destes
 comandos:
@@ -42,19 +42,24 @@ Este projeto é distribuído sob a licença [MIT](./LICENSE).
 
 ## Configuração
 
-1. Instale as dependências com `npm install`.
-2. Copie `.env.example` para `.env`.
-3. Defina `API_TOKEN` como um segredo longo e aleatório. Por exemplo, gere-o
-   com `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`.
-4. Mantenha ou ajuste `WA_RECIPIENTS`, com números no formato internacional
+1. Instale o pacote globalmente com `npm install --global jeliwhats-bot`.
+2. No diretório em que o serviço deve guardar a configuração e a sessão do
+   WhatsApp, execute `jeliwhats-bot init`. O comando cria `.env` com um
+   `API_TOKEN` aleatório. Ele falha se `.env` já existir, sem sobrescrever o
+   arquivo.
+3. Ajuste `WA_RECIPIENTS`, com números no formato internacional
    E.164 (código do país + DDD + número, sem `+`), separados por vírgula. O
-   exemplo usa números fictícios; substitua-os pelos destinatários desejados.
-5. Se um dos destinatários for o mesmo número da conta WhatsApp conectada,
+   arquivo inicial usa números fictícios; substitua-os pelos destinatários
+   desejados.
+4. Se um dos destinatários for o mesmo número da conta WhatsApp conectada,
    defina `WA_SELF_NUMBER` com esse número completo para enviar pelo ID da
    própria conta. Deixe-o vazio se nenhum destinatário for a conta conectada.
-6. Inicie com `npm start` e escaneie o QR code exibido no terminal pelo
-   WhatsApp que será usado para enviar as notificações. A sessão fica salva
-   em `.wwebjs_auth/`; não compartilhe nem versione essa pasta.
+5. Inicie com `jeliwhats-bot` e escaneie o QR code exibido no terminal
+   pelo WhatsApp que será usado para enviar as notificações. A sessão fica
+   salva em `.wwebjs_auth/`; não compartilhe nem versione essa pasta.
+
+Para executar a partir do código-fonte em vez do pacote publicado, use
+`npm install`, copie `.env.example` para `.env` e inicie com `npm start`.
 
 No Windows, execute `.\whatsapp-bot.bat` no PowerShell ou dê duplo clique
 nesse arquivo. Ele abre uma janela PowerShell separada para o bot; pressione
