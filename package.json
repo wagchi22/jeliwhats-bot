@@ -1,0 +1,23 @@
+{
+  "name": "whatsapp-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API de notificações do Jellyfin para WhatsApp",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.19.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "https://github.com/Adi1231234/whatsapp-web.js/archive/85443fa4c8f86111457590dd06564c3efe0f6d1d.tar.gz"
+  },
+  "allowScripts": {
+    "puppeteer@24.38.0": true
+  }
+}
