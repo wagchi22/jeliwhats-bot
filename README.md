@@ -10,6 +10,25 @@ projeto fixa temporariamente o commit `85443fa` da
 não foi incluído no pacote publicado. O `.npmrc` permite somente dependências
 remotas declaradas neste `package.json`.
 
+## Versionamento
+
+O projeto usa versionamento semântico (`MAJOR.MINOR.PATCH`). A versão atual é
+`1.0.0`, registrada no `package.json` e no `package-lock.json`, e sua tag Git é
+`v1.0.0`.
+
+Para criar a próxima versão, com a árvore de trabalho limpa, execute um destes
+comandos:
+
+```powershell
+npm version patch # correção compatível: 1.0.0 -> 1.0.1
+npm version minor # funcionalidade compatível: 1.0.0 -> 1.1.0
+npm version major # mudança incompatível: 1.0.0 -> 2.0.0
+```
+
+O npm atualiza os dois arquivos de manifesto e cria um commit e uma tag Git
+`vX.Y.Z`. Depois, publique o commit e as tags com `git push origin main
+--follow-tags`.
+
 ## Licença
 
 Este projeto é distribuído sob a licença [MIT](./LICENSE).
