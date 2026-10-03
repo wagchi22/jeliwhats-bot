@@ -485,5 +485,6 @@ module.exports = {
   isWhatsAppStreamReady,
   listenForRequests,
   readConfig,
+  start,
   tokenMatches,
 };

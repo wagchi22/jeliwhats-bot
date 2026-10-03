@@ -1,9 +1,33 @@
 {
-  "name": "whatsapp-bot",
+  "name": "jeliwhats-bot",
   "version": "1.0.0",
-  "private": true,
   "description": "API de notificações do Jellyfin para WhatsApp",
+  "license": "MIT",
   "main": "src/index.js",
+  "bin": {
+    "jeliwhats-bot": "bin/jeliwhats-bot.js"
+  },
+  "files": [
+    ".env.example",
+    "LICENSE",
+    "README.md",
+    "bin/",
+    "src/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wagchi22/whatsapp-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wagchi22/whatsapp-bot/issues"
+  },
+  "homepage": "https://github.com/wagchi22/whatsapp-bot#readme",
+  "keywords": [
+    "jellyfin",
+    "whatsapp",
+    "notifications",
+    "bot"
+  ],
   "scripts": {
     "start": "node src/index.js",
     "test": "node --test"
