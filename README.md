@@ -61,7 +61,7 @@ Este projeto é distribuído sob a licença [MIT](./LICENSE).
 Para executar a partir do código-fonte em vez do pacote publicado, use
 `npm install`, copie `.env.example` para `.env` e inicie com `npm start`.
 
-No Windows, execute `.\whatsapp-bot.bat` no PowerShell ou dê duplo clique
+No Windows, execute `.\jeliwhats-bot.bat` no PowerShell ou dê duplo clique
 nesse arquivo. Ele abre uma janela PowerShell separada para o bot; pressione
 `Ctrl+C` nessa janela para encerrar a conexão e o navegador sem o prompt do
 CMD para finalizar um arquivo em lotes. Também é possível iniciar diretamente
