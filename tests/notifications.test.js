@@ -4,6 +4,7 @@ const http = require('node:http');
 const { formatNotification } = require('../src/notifications');
 const {
   createApp,
+  isKnownNonFatalWhatsAppConsoleError,
   isWhatsAppStreamReady,
   listenForRequests,
   readConfig,
@@ -99,6 +100,25 @@ test('accepts readiness only when the WhatsApp stream is connected and synchroni
   assert.equal(isWhatsAppStreamReady({ ...readyState, streamMode: 'SYNCING' }), false);
   assert.equal(isWhatsAppStreamReady({ ...readyState, connectionState: 'OPENING' }), false);
   assert.equal(isWhatsAppStreamReady(undefined), false);
+});
+
+test('ignores only the known non-fatal pinned-message history error', () => {
+  const warning = [
+    'ErrorUtils caught an error:',
+    '[processLiveMessage] bad history msg false_123@g.us_3EB0F1C3229D06650ED9F7_123@lid',
+    't=pinned_message st=undefined new=undefined fresh=undefined',
+    '(bad-process-live-message-call)',
+    'Subsequent non-fatal errors won\'t be logged; see https://fburl.com/debugjs.',
+  ].join('\n');
+
+  assert.equal(isKnownNonFatalWhatsAppConsoleError(warning), true);
+  assert.equal(
+    isKnownNonFatalWhatsAppConsoleError(
+      '[processLiveMessage] bad history msg false_123@g.us_123@lid t=message (bad-process-live-message-call)',
+    ),
+    false,
+  );
+  assert.equal(isKnownNonFatalWhatsAppConsoleError('Outro erro do WhatsApp Web'), false);
 });
 
 test('reports an occupied API port without an unhandled server error', async (t) => {
