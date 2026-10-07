@@ -67,7 +67,8 @@ endpoint `GET /health` informa se o WhatsApp já está conectado.
 O terminal mostra mensagens simples em português. Avisos conhecidos e não
 fatais do WhatsApp Web, como os erros de persistência do navegador e de QPL,
 são ocultados, assim como o erro transitório `Runtime.addBinding: Target
-closed` emitido durante a navegação da página.
+closed` emitido durante a navegação da página e o erro não fatal de histórico
+`bad-process-live-message-call` ao carregar mensagens fixadas em grupos.
 
 ## Integração com o Webhook do Jellyfin
 

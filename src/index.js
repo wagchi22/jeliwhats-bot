@@ -66,6 +66,21 @@ function isWhatsAppStreamReady(state) {
     && state?.hasSynced === true;
 }
 
+const knownNonFatalWhatsAppConsoleErrorPatterns = [
+  /storage bucket persistence denied/i,
+  /Haste-supplied config for the QPL event/i,
+  /WALogger called before initialization/i,
+  /Failed to execute 'get' on 'IDBObjectStore': No key or key range specified/i,
+  /findOrCreateLatestChat.*id->lid failed.*findOrCreateLatestChat_lid_not_found/i,
+  /Failed to load resource: the server responded with a status of 400/i,
+  /Protocol error \((?:Runtime\.addBinding|Page\.addScriptToEvaluateOnNewDocument)\): Target closed/i,
+  /\[processLiveMessage\] bad history msg [\s\S]*?\bt=pinned_message\b[\s\S]*?\(bad-process-live-message-call\)/i,
+];
+
+function isKnownNonFatalWhatsAppConsoleError(text) {
+  return knownNonFatalWhatsAppConsoleErrorPatterns.some((pattern) => pattern.test(text));
+}
+
 function listenForRequests(app, port) {
   return new Promise((resolve, reject) => {
     const server = http.createServer(app);
@@ -336,11 +351,7 @@ async function start() {
     client.pupPage.on('console', (message) => {
       if (message.type() !== 'error') return;
       const text = message.text();
-      if (
-        /storage bucket persistence denied|Haste-supplied config for the QPL event|WALogger called before initialization|Failed to execute 'get' on 'IDBObjectStore': No key or key range specified|findOrCreateLatestChat.*id->lid failed.*findOrCreateLatestChat_lid_not_found|Failed to load resource: the server responded with a status of 400|Protocol error \((?:Runtime\.addBinding|Page\.addScriptToEvaluateOnNewDocument)\): Target closed/i.test(text)
-      ) {
-        return;
-      }
+      if (isKnownNonFatalWhatsAppConsoleError(text)) return;
       console.error('Erro no console do WhatsApp Web:', text);
     });
     client.pupPage.on('requestfailed', (request) => {
@@ -482,6 +493,7 @@ if (require.main === module) {
 
 module.exports = {
   createApp,
+  isKnownNonFatalWhatsAppConsoleError,
   isWhatsAppStreamReady,
   listenForRequests,
   readConfig,
