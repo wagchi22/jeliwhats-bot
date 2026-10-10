@@ -5,6 +5,10 @@ const http = require('node:http');
 const express = require('express');
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
+const {
+  attachWhatsAppDebugListeners,
+  createWhatsAppDebugLogger,
+} = require('./debug-log');
 const { formatNotification } = require('./notifications');
 const { sendWhatsAppMessage } = require('./whatsapp');
 
@@ -48,6 +52,7 @@ function readConfig(env = process.env) {
     recipients: [...new Set(recipients)],
     selfPhoneNumber,
     dedupeWindowMs: dedupeWindowSeconds * 1000,
+    debugLogEnabled: env.WA_DEBUG_LOG === '1',
   };
 }
 
@@ -276,6 +281,11 @@ function createApp({
 
 async function start() {
   const config = readConfig();
+  const debugLog = createWhatsAppDebugLogger(config.debugLogEnabled);
+  if (config.debugLogEnabled) {
+    debugLog('session-start', { note: 'Sensitive console messages and response bodies are omitted.' });
+    console.log('Log de diagnóstico local do WhatsApp ativado em whatsapp-debug.txt.');
+  }
   let whatsappReady = false;
   let readinessInterval;
   let readinessDiagnosticTimeout;
@@ -346,6 +356,7 @@ async function start() {
     if (!client.pupPage || diagnosticsAttached) return;
     diagnosticsAttached = true;
     clearInterval(diagnosticsInterval);
+    attachWhatsAppDebugListeners(client.pupPage, debugLog);
     client.pupPage.on('pageerror', (error) => {
       console.error('Erro JavaScript na página do WhatsApp:', error.message);
     });
