@@ -121,6 +121,21 @@ test('ignores only the known non-fatal pinned-message history error', () => {
   assert.equal(isKnownNonFatalWhatsAppConsoleError('Outro erro do WhatsApp Web'), false);
 });
 
+test('ignores the known report-only upgrade-insecure-requests CSP warning', () => {
+  assert.equal(
+    isKnownNonFatalWhatsAppConsoleError(
+      "The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy.",
+    ),
+    true,
+  );
+  assert.equal(
+    isKnownNonFatalWhatsAppConsoleError(
+      "The Content Security Policy directive 'script-src' was violated.",
+    ),
+    false,
+  );
+});
+
 test('reports an occupied API port without an unhandled server error', async (t) => {
   const occupiedServer = http.createServer();
   occupiedServer.listen(0);
