@@ -4,5 +4,6 @@ node_modules/
 !.env.example
 .wwebjs_auth/
 .wwebjs_cache/
+/whatsapp-debug.txt*
 npm-debug.log*
 *.log

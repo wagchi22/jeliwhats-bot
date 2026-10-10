@@ -46,6 +46,7 @@ WA_DEDUPE_WINDOW_SECONDS=300
 - `WA_RECIPIENTS`: números no formato E.164 sem `+`.
 - `WA_SELF_NUMBER`: use apenas quando um destinatário for o próprio número da conta conectada.
 - `WA_DEDUPE_WINDOW_SECONDS`: tempo para ignorar eventos repetidos; use `0` para desativar.
+- `WA_DEBUG_LOG`: defina como `1` para ativar o log local de diagnóstico do navegador; padrão `0`.
 
 ## Execução
 
@@ -70,6 +71,8 @@ node .\src\index.js
 A sessão do WhatsApp fica em `.wwebjs_auth/` e não deve ser compartilhada nem versionada.
 
 O endpoint `GET /health` informa se a conexão com o WhatsApp já está pronta.
+
+Para investigar falhas de rede do WhatsApp Web, defina `WA_DEBUG_LOG=1` no `.env` e reinicie o bot. Os erros HTTP (incluindo status `403`), falhas de requisição e horários serão registrados em `whatsapp-debug.txt`, na raiz do projeto. O arquivo é ignorado pelo Git e não é enviado ao GitHub; não o force para um commit nem o compartilhe sem revisar. Corpos de resposta, mensagens do console, cabeçalhos e query strings não são gravados, e identificadores óbvios nos caminhos das URLs são ocultados. O log é limitado a 1 MB, mantendo uma cópia anterior em `whatsapp-debug.txt.1`. Desative o diagnóstico com `WA_DEBUG_LOG=0`.
 
 ## Integração com o Jellyfin
 

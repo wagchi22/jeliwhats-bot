@@ -57,6 +57,12 @@ test('loads and normalizes configured recipient numbers', () => {
   assert.deepEqual(config.recipients, ['15550100101', '15550100102']);
   assert.equal(config.selfPhoneNumber, '15550100101');
   assert.equal(config.dedupeWindowMs, 30000);
+  assert.equal(config.debugLogEnabled, false);
+  assert.equal(readConfig({
+    API_TOKEN: 'test-secret',
+    WA_RECIPIENTS: '15550100101',
+    WA_DEBUG_LOG: '1',
+  }).debugLogEnabled, true);
 });
 
 test('rejects invalid configuration values', () => {
