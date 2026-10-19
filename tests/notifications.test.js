@@ -127,6 +127,22 @@ test('ignores only the known non-fatal pinned-message history error', () => {
   assert.equal(isKnownNonFatalWhatsAppConsoleError('Outro erro do WhatsApp Web'), false);
 });
 
+test('ignores the known unsupported newsletter chat message error', () => {
+  const warning = [
+    'ErrorUtils caught an error:',
+    '[newsletter] unsupported msg type=chat sub=undefined (unsupported-newsletter-message)',
+    'Subsequent non-fatal errors won\'t be logged; see https://fburl.com/debugjs.',
+  ].join('\n');
+
+  assert.equal(isKnownNonFatalWhatsAppConsoleError(warning), true);
+  assert.equal(
+    isKnownNonFatalWhatsAppConsoleError(
+      '[newsletter] unsupported msg type=other sub=undefined (unsupported-newsletter-message)',
+    ),
+    false,
+  );
+});
+
 test('ignores the known report-only upgrade-insecure-requests CSP warning', () => {
   assert.equal(
     isKnownNonFatalWhatsAppConsoleError(

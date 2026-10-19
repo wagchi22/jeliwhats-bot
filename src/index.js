@@ -72,6 +72,7 @@ function isWhatsAppStreamReady(state) {
 }
 
 const knownNonFatalWhatsAppConsoleErrorPatterns = [
+  /\[newsletter\]\s+unsupported msg type=chat\b/i,
   /The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy/i,
   /storage bucket persistence denied/i,
   /Haste-supplied config for the QPL event/i,
