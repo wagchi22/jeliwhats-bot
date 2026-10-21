@@ -118,7 +118,7 @@ Invoke-RestMethod `
 
 - `localhost` só funciona quando o Jellyfin e a API estiverem na mesma máquina ou rede local.
 - Se a API estiver exposta fora da rede local, proteja-a com autenticação e use HTTPS.
-- A API responde com `503` enquanto o WhatsApp estiver desconectado, `400` para payload inválido e `502` se o envio falhar para algum destinatário.
+- A API responde com `503` enquanto o WhatsApp estiver desconectado ou reconectando, `400` para payload inválido e `502` se o envio falhar para algum destinatário.
 - O campo `recipient` pode ser usado para enviar a mensagem apenas para um número específico já configurado.
 
 ## Testes

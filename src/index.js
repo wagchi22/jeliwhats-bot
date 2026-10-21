@@ -298,7 +298,6 @@ async function start() {
   });
 
   const markWhatsAppReady = () => {
-    clearInterval(readinessInterval);
     clearTimeout(readinessDiagnosticTimeout);
     if (whatsappReady) return;
     whatsappReady = true;
@@ -315,6 +314,7 @@ async function start() {
   });
   client.on('change_state', (state) => {
     console.log(`Estado da conexão WhatsApp: ${state}`);
+    if (state !== 'CONNECTED') whatsappReady = false;
   });
   client.on('authenticated', () => {
     console.log('Sessão do WhatsApp autenticada.');
