@@ -128,6 +128,12 @@ Invoke-RestMethod `
 npm test
 ```
 
+## Convenções de versão e commits
+
+- Escreva as mensagens dos commits em português, de forma curta e descritiva.
+- Use `Release vX.Y.Z` nos títulos das releases publicadas.
+- Mantenha as tags de versão no formato SemVer `vX.Y.Z`.
+
 ## Licença
 
 Este projeto está sob a licença [MIT](./LICENSE).
