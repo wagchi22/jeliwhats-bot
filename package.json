@@ -30,7 +30,8 @@
   ],
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=18.19.0"
@@ -43,5 +44,10 @@
   },
   "allowScripts": {
     "puppeteer@24.38.0": true
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "husky": "^9.1.7"
   }
 }

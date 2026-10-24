@@ -130,9 +130,12 @@ npm test
 
 ## Convenções de versão e commits
 
-- Escreva as mensagens dos commits em português, de forma curta e descritiva.
-- Use `Release vX.Y.Z` nos títulos das releases publicadas.
-- Mantenha as tags de versão no formato SemVer `vX.Y.Z`.
+- Escreva as mensagens dos commits em português, de forma curta e descritiva, seguindo Conventional Commits: `<tipo>(escopo opcional): descrição`.
+- Tipos comuns: `feat` para funcionalidades, `fix` para correções, `docs` para documentação, `test` para testes, `refactor` para refatorações, `ci` para integração contínua e `chore` para manutenção.
+- Exemplos: `feat: adiciona endpoint de saúde`, `fix(whatsapp): aguarda sincronização antes de enviar` e `docs: documenta a configuração`.
+- Para mudanças incompatíveis, use `!` após o tipo ou escopo e explique a mudança no corpo ou no rodapé `BREAKING CHANGE:`.
+- As mensagens são validadas pelo hook `commit-msg`, instalado ao executar `npm install`, e nos pull requests.
+- Use `vX.Y.Z` nos títulos das releases publicadas e mantenha as tags de versão no formato SemVer `vX.Y.Z`.
 
 ## Licença
 
