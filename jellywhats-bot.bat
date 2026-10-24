@@ -1,2 +1,2 @@
 @echo off
-start "Jellyfin WhatsApp Bot" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0jellywhats-bot.ps1"
+start "jellywhats-bot" powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0jellywhats-bot.ps1"

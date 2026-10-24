@@ -135,7 +135,8 @@ npm test
 - Exemplos: `feat: adiciona endpoint de saúde`, `fix(whatsapp): aguarda sincronização antes de enviar` e `docs: documenta a configuração`.
 - Para mudanças incompatíveis, use `!` após o tipo ou escopo e explique a mudança no corpo ou no rodapé `BREAKING CHANGE:`.
 - As mensagens são validadas pelo hook `commit-msg`, instalado ao executar `npm install`, e nos pull requests.
-- Use `vX.Y.Z` nos títulos das releases publicadas e mantenha as tags de versão no formato SemVer `vX.Y.Z`.
+- Após um push para `main`, o Semantic Release cria automaticamente uma release do GitHub e uma tag SemVer `vX.Y.Z` quando os testes passam. Commits `feat` geram uma versão minor, `fix` e `perf` uma versão patch, e mudanças incompatíveis uma versão major.
+- O projeto não é publicado no npm por esse fluxo.
 
 ## Licença
 
