@@ -24,8 +24,8 @@ function initializeConfig(directory = process.cwd()) {
 
 function printUsage() {
   console.log(`Uso:
-  jeliwhats-bot init    cria um .env neste diretório
-  jeliwhats-bot         inicia a API e conecta ao WhatsApp`);
+  jellywhats-bot init    cria um .env neste diretório
+  jellywhats-bot         inicia a API e conecta ao WhatsApp`);
 }
 
 async function run(args = process.argv.slice(2)) {

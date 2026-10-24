@@ -1,11 +1,11 @@
 {
-  "name": "jeliwhats-bot",
+  "name": "jellywhats-bot",
   "version": "1.1.0",
   "description": "API de notificações do Jellyfin para WhatsApp",
   "license": "MIT",
   "main": "src/index.js",
   "bin": {
-    "jeliwhats-bot": "bin/jeliwhats-bot.js"
+    "jellywhats-bot": "bin/jellywhats-bot.js"
   },
   "files": [
     ".env.example",
@@ -16,12 +16,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wagchi22/jeliwhats-bot.git"
+    "url": "git+https://github.com/wagchi22/jellywhats-bot.git"
   },
   "bugs": {
-    "url": "https://github.com/wagchi22/jeliwhats-bot/issues"
+    "url": "https://github.com/wagchi22/jellywhats-bot/issues"
   },
-  "homepage": "https://github.com/wagchi22/jeliwhats-bot#readme",
+  "homepage": "https://github.com/wagchi22/jellywhats-bot#readme",
   "keywords": [
     "jellyfin",
     "whatsapp",

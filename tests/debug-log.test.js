@@ -12,7 +12,7 @@ const {
 } = require('../src/debug-log');
 
 test('does not create a debug log when diagnostics are disabled', (t) => {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jeliwhats-debug-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jellywhats-debug-'));
   const filePath = path.join(directory, 'whatsapp-debug.txt');
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
 
@@ -22,7 +22,7 @@ test('does not create a debug log when diagnostics are disabled', (t) => {
 });
 
 test('writes local diagnostic records without request secrets or message contents', (t) => {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jeliwhats-debug-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jellywhats-debug-'));
   const filePath = path.join(directory, 'whatsapp-debug.txt');
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
 
@@ -83,7 +83,7 @@ test('strips query strings and redacts sensitive request path segments', () => {
 });
 
 test('rotates the local debug log when it reaches its size limit', (t) => {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jeliwhats-debug-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jellywhats-debug-'));
   const filePath = path.join(directory, 'whatsapp-debug.txt');
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
 

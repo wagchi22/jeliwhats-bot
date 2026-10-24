@@ -1,4 +1,4 @@
-﻿# jeliwhats-bot
+# jellywhats-bot
 
 Bot simples para receber notificações do Jellyfin e enviá-las para números do WhatsApp.
 
@@ -19,8 +19,8 @@ Bot simples para receber notificações do Jellyfin e enviá-las para números d
 ## Instalação
 
 ```bash
-git clone https://github.com/wagchi22/jeliwhats-bot.git
-cd jeliwhats-bot
+git clone https://github.com/wagchi22/jellywhats-bot.git
+cd jellywhats-bot
 npm install
 ```
 
@@ -29,7 +29,7 @@ npm install
 1. Gere o arquivo `.env`:
 
 ```bash
-node bin/jeliwhats-bot.js init
+node bin/jellywhats-bot.js init
 ```
 
 2. Ajuste os valores em `.env`:
@@ -60,7 +60,7 @@ As mensagens do terminal incluem data/hora local e nível (`INFO` ou `ERRO`), co
 No Windows, também é possível usar:
 
 ```powershell
-.\jeliwhats-bot.bat
+.\jellywhats-bot.bat
 ```
 
 Ou iniciar direto:

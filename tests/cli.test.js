@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const cliPath = path.join(__dirname, '..', 'bin', 'jeliwhats-bot.js');
+const cliPath = path.join(__dirname, '..', 'bin', 'jellywhats-bot.js');
 
 test('init creates a configured .env with a generated API token', (t) => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'jellyfin-whatsapp-'));
@@ -44,6 +44,6 @@ test('CLI help displays the available commands', () => {
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /jeliwhats-bot init/);
+  assert.match(result.stdout, /jellywhats-bot init/);
   assert.match(result.stdout, /inicia a API/);
 });
