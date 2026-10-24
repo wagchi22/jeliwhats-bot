@@ -297,6 +297,46 @@ test('protects the notification endpoint and delivers to configured recipients',
   assert.equal(unavailable.status, 503);
 });
 
+test('logs delivery failures with the reason', async (t) => {
+  const app = createApp({
+    client: {
+      sendMessage: async () => {
+        throw new Error("Attempted to use detached Frame 'frame-id'.");
+      },
+    },
+    recipients: ['15550100101'],
+    apiToken: 'secret',
+    isReady: () => true,
+  });
+  const server = app.listen(0);
+  t.after(() => {
+    server.close();
+    server.closeAllConnections();
+  });
+  await new Promise((resolve) => server.once('listening', resolve));
+
+  const originalError = console.error;
+  const errorLines = [];
+  console.error = (line) => errorLines.push(line);
+  let response;
+  try {
+    response = await fetch(`http://127.0.0.1:${server.address().port}/api/notifications`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ apiToken: 'secret', message: 'Teste' }),
+    });
+  } finally {
+    console.error = originalError;
+  }
+
+  assert.equal(response.status, 502);
+  assert.match(
+    errorLines[0],
+    /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2} ERRO Falha ao enviar notificação: Attempted to use detached Frame 'frame-id'\.$/,
+  );
+  assert.doesNotMatch(errorLines[0], /15550100101/);
+});
+
 test('routes a configured self-recipient through the linked WhatsApp account ID', async (t) => {
   const sentMessages = [];
   const app = createApp({

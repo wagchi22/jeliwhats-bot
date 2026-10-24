@@ -55,6 +55,7 @@ npm start
 ```
 
 Depois, escaneie o QR code exibido no terminal com a conta do WhatsApp.
+As mensagens do terminal incluem data/hora local e nível (`INFO` ou `ERRO`), com cores quando executadas em um terminal. Defina `NO_COLOR` para desativar as cores.
 
 No Windows, também é possível usar:
 

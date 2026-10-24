@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { logError } = require('./logger');
 
 const defaultLogPath = path.join(__dirname, '..', 'whatsapp-debug.txt');
 const maxLogBytes = 1024 * 1024;
@@ -60,9 +61,8 @@ function createWhatsAppDebugLogger(enabled, filePath = defaultLogPath) {
       });
     } catch (error) {
       active = false;
-      console.error(
-        'Não foi possível gravar o log local de diagnóstico do WhatsApp; gravação desativada:',
-        error.message,
+      logError(
+        `Não foi possível gravar o log local de diagnóstico do WhatsApp; gravação desativada: ${error.message}`,
       );
     }
   };

@@ -11,6 +11,7 @@ const {
 } = require('./debug-log');
 const { formatNotification } = require('./notifications');
 const { sendWhatsAppMessage } = require('./whatsapp');
+const { logError, logInfo } = require('./logger');
 
 function readConfig(env = process.env) {
   const apiToken = env.API_TOKEN?.trim();
@@ -148,7 +149,6 @@ function createApp({
   });
 
   app.post('/api/notifications', async (req, res) => {
-    console.log('Webhook recebido.');
     const authorization = req.get('authorization') || '';
     const bearerToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
     const bodyToken = req.body && typeof req.body === 'object'
@@ -159,7 +159,7 @@ function createApp({
       const bodyKeys = req.body && typeof req.body === 'object' && !Array.isArray(req.body)
         ? Object.keys(req.body).filter((key) => !/token/i.test(key))
         : [];
-      console.error(
+      logError(
         'Webhook recusado: token ausente ou inválido.',
         JSON.stringify({
           contentType: req.get('content-type') || 'ausente',
@@ -174,7 +174,7 @@ function createApp({
     }
 
     if (!isReady()) {
-      console.error('Webhook recusado: WhatsApp ainda não está conectado.');
+      logError('Webhook recusado: WhatsApp ainda não está conectado.');
       return res.status(503).json({ error: 'WhatsApp ainda não está conectado.' });
     }
 
@@ -183,12 +183,12 @@ function createApp({
       const requestedRecipient = req.body.recipient;
       if (requestedRecipient !== undefined) {
         if (typeof requestedRecipient !== 'string') {
-          console.error('Webhook recusado: recipient inválido.');
+          logError('Webhook recusado: recipient inválido.');
           return res.status(400).json({ error: 'recipient deve ser um número configurado.' });
         }
         const normalizedRecipient = requestedRecipient.replace(/\D/g, '');
         if (!recipients.includes(normalizedRecipient)) {
-          console.error('Webhook recusado: recipient não configurado.');
+          logError('Webhook recusado: recipient não configurado.');
           return res.status(400).json({ error: 'recipient não está na lista de destinatários configurados.' });
         }
         targetRecipients = [normalizedRecipient];
@@ -199,7 +199,7 @@ function createApp({
     try {
       message = formatNotification(req.body);
     } catch (error) {
-      console.error(
+      logError(
         'Webhook recusado: payload sem mensagem válida.',
         error instanceof Error ? error.message : String(error),
       );
@@ -226,12 +226,13 @@ function createApp({
       }
       dedupeKey = JSON.stringify([eventType, itemId, [...targetRecipients].sort()]);
       if (recentEvents.has(dedupeKey)) {
-        console.log('Notificação duplicada ignorada.');
+        logInfo('Notificação duplicada ignorada.');
         return res.status(200).json({ sent: 0, duplicate: true });
       }
       recentEvents.set(dedupeKey, now + dedupeWindowMs);
     }
 
+    logInfo('Webhook recebido, enviando notificações...');
     const deliveries = await Promise.allSettled(
       targetRecipients.map((number) => sendWhatsAppMessage(
         client,
@@ -246,15 +247,13 @@ function createApp({
 
     if (failed.length > 0) {
       if (dedupeKey) recentEvents.delete(dedupeKey);
-      console.error(
-        `Falha ao enviar notificação para ${failed.length} destinatário(s):`,
-        failed.map(({ result, recipient }) => ({
-          recipient: `***${recipient.slice(-4)}`,
-          error: result.status === 'rejected'
-            ? (result.reason.message || String(result.reason)).replace(/\s+/g, ' ').trim()
-            : 'Erro desconhecido',
-        })),
-      );
+      const reasons = failed.map(({ result }) => {
+        const reason = result.status === 'rejected'
+          ? result.reason?.message || String(result.reason)
+          : 'Erro desconhecido';
+        return reason;
+      }).join('; ');
+      logError(`Falha ao enviar notificação: ${reasons}`);
       return res.status(502).json({
         error: 'Não foi possível entregar a notificação a todos os destinatários.',
         sent: targetRecipients.length - failed.length,
@@ -262,7 +261,7 @@ function createApp({
       });
     }
 
-    console.log(`Notificação enviada para ${targetRecipients.length} destinatário(s).`);
+    logInfo(`Notificação enviada para ${targetRecipients.length} destinatário(s).`);
     return res.status(200).json({ sent: targetRecipients.length });
   });
 
@@ -270,7 +269,7 @@ function createApp({
     if (error instanceof SyntaxError && 'body' in error) {
       return res.status(400).json({ error: 'JSON inválido.' });
     }
-    console.error(
+    logError(
       'Erro inesperado na API:',
       error instanceof Error ? error.message : String(error),
     );
@@ -285,8 +284,9 @@ async function start() {
   const debugLog = createWhatsAppDebugLogger(config.debugLogEnabled);
   if (config.debugLogEnabled) {
     debugLog('session-start', { note: 'Sensitive console messages and response bodies are omitted.' });
-    console.log('Log de diagnóstico local do WhatsApp ativado em whatsapp-debug.txt.');
+    logInfo('Log ativado em whatsapp-debug.txt.');
   }
+  logInfo('Iniciando API...');
   let whatsappReady = false;
   let readinessInterval;
   let readinessDiagnosticTimeout;
@@ -301,31 +301,29 @@ async function start() {
     clearTimeout(readinessDiagnosticTimeout);
     if (whatsappReady) return;
     whatsappReady = true;
-    console.log('WhatsApp conectado e pronto para enviar notificações.');
+    logInfo('Sessão do WhatsApp conectada e autenticada.');
+    logInfo('Aguardando Webhooks...');
   };
 
   client.on('qr', (qr) => {
-    console.log('Escaneie este QR code com o WhatsApp para conectar:');
+    logInfo('Escaneie este QR code com o WhatsApp para conectar:');
     qrcode.generate(qr, { small: true });
   });
   client.on('ready', markWhatsAppReady);
   client.on('loading_screen', (percent, message) => {
-    console.log(`WhatsApp Web carregando (${percent}%): ${message}`);
+    logInfo(`WhatsApp Web carregando (${percent}%): ${message}`);
   });
   client.on('change_state', (state) => {
-    console.log(`Estado da conexão WhatsApp: ${state}`);
+    logInfo(`Estado da conexão WhatsApp: ${state}`);
     if (state !== 'CONNECTED') whatsappReady = false;
-  });
-  client.on('authenticated', () => {
-    console.log('Sessão do WhatsApp autenticada.');
   });
   client.on('auth_failure', (message) => {
     whatsappReady = false;
-    console.error('Falha na autenticação do WhatsApp:', message);
+    logError(`Falha na autenticação do WhatsApp: ${message}`);
   });
   client.on('disconnected', (reason) => {
     whatsappReady = false;
-    console.error('WhatsApp desconectado:', reason);
+    logError(`WhatsApp desconectado: ${reason}`);
   });
 
   const app = createApp({
@@ -336,7 +334,6 @@ async function start() {
     selfPhoneNumber: config.selfPhoneNumber,
     dedupeWindowMs: config.dedupeWindowMs,
   });
-  console.log('Iniciando navegador e conectando ao WhatsApp...');
   let server;
   try {
     server = await listenForRequests(app, config.port);
@@ -348,7 +345,7 @@ async function start() {
     }
     throw error;
   }
-  console.log(`API de notificações disponível na porta ${config.port}.`);
+  logInfo(`API disponível na porta ${config.port}.`);
 
   let readinessCheckRunning = false;
   let readinessDiagnosticShown = false;
@@ -359,13 +356,13 @@ async function start() {
     clearInterval(diagnosticsInterval);
     attachWhatsAppDebugListeners(client.pupPage, debugLog);
     client.pupPage.on('pageerror', (error) => {
-      console.error('Erro JavaScript na página do WhatsApp:', error.message);
+      logError(`Erro JavaScript na página do WhatsApp: ${error.message}`);
     });
     client.pupPage.on('console', (message) => {
       if (message.type() !== 'error') return;
       const text = message.text();
       if (isKnownNonFatalWhatsAppConsoleError(text)) return;
-      console.error('Erro no console do WhatsApp Web:', text);
+      logError(`Erro no console do WhatsApp Web: ${text}`);
     });
     client.pupPage.on('requestfailed', (request) => {
       const error = request.failure()?.errorText || 'network error';
@@ -376,11 +373,7 @@ async function start() {
       ) {
         return;
       }
-      console.error(
-        'Falha ao carregar recurso do WhatsApp Web:',
-        error,
-        requestUrl.origin,
-      );
+      logError(`Falha ao carregar recurso do WhatsApp Web: ${error} ${requestUrl.origin}`);
     });
   }, 250);
   diagnosticsInterval.unref();
@@ -428,7 +421,7 @@ async function start() {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       if (!/target closed|execution context was destroyed|cannot find context/i.test(message)) {
-        console.error('Não foi possível verificar o estado do WhatsApp:', message);
+        logError(`Não foi possível verificar o estado do WhatsApp: ${message}`);
       }
     } finally {
       readinessCheckRunning = false;
@@ -437,7 +430,7 @@ async function start() {
   readinessInterval.unref();
 
   client.initialize().catch((error) => {
-    console.error('Não foi possível iniciar o cliente do WhatsApp:', error);
+    logError(`Não foi possível iniciar o cliente do WhatsApp: ${error}`);
     clearInterval(readinessInterval);
     server.close(() => process.exit(1));
   });
@@ -447,7 +440,7 @@ async function start() {
     readinessDiagnosticShown = true;
 
     if (!client.pupPage || client.pupPage.isClosed()) {
-      console.error('O WhatsApp ainda não ficou pronto após 45 segundos; navegador sem página ativa.');
+      logError('O WhatsApp ainda não ficou pronto após 45 segundos; navegador sem página ativa.');
       return;
     }
 
@@ -476,12 +469,12 @@ async function start() {
         }
         return result;
       });
-      console.log('Estado de diagnóstico do WhatsApp:', JSON.stringify(diagnostics));
+      logInfo(`Estado de diagnóstico do WhatsApp: ${JSON.stringify(diagnostics)}`);
       if (!whatsappReady) {
-        console.error('O WhatsApp ainda não confirmou a conexão. A API permanece indisponível para envios.');
+        logError('O WhatsApp ainda não confirmou a conexão. A API permanece indisponível para envios.');
       }
     } catch (error) {
-      console.error('O WhatsApp ainda não confirmou a conexão:', error.message);
+      logError(`O WhatsApp ainda não confirmou a conexão: ${error.message}`);
     }
   }, 45000);
   readinessDiagnosticTimeout.unref();
@@ -499,7 +492,7 @@ async function start() {
 
 if (require.main === module) {
   start().catch((error) => {
-    console.error(error.message);
+    logError(error.message);
     process.exitCode = 1;
   });
 }
